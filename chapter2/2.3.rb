@@ -138,3 +138,29 @@ old_environment = { y: Number.new(5) }
 new_environment = old_environment.merge({ x: Number.new(3) })
 old_environment
 
+class Assign < Struct.new(:name, :expression)
+    def to_s
+        "#{name} = #{expression}"
+    end
+    def inspect
+        "<<#{self}>>"
+    end
+    def reducible?
+        true
+    end
+    def reduce(environment)
+        if expression.reducible?
+            [Assign.new(name, expression.reduce(environment)), environment]
+        else
+            [DoNothing.new, environment.merge({ name => expression })]
+        end
+    end
+end
+
+statement = Assign.new(:x, Add.new(Variable.new(:x),Number.new(1)))
+environment = { x: Number.new(2) }
+statement.reducible?
+statement, environment = statement.reduce(environment)
+statement, environment = statement.reduce(environment)
+statement, environment = statement.reduce(environment)
+statement.reducible?
