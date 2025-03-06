@@ -91,7 +91,7 @@ class LessThan < Struct.new(:left, :right)
     end
     def reduce(environment)
         if left.reducible?
-            LessThan.new(left.reduc(environment),right)
+            LessThan.new(left.reduce(environment),right)
         elsif right.reducible?
             LessThan.new(left,right.reduce(environment))
         else
@@ -245,4 +245,27 @@ Machine.new(
         Assign.new(:y, Add.new(Variable.new(:x), Number.new(3)))
     ),
     {}
+).run
+
+class While < Struct.new(:condition, :body)
+    def to_s
+        "while (#{condition}) { #{body} }"
+    end
+    def inspect
+        "<<#{self}>>"
+    end
+    def reducible?
+        true
+    end
+    def reduce(environment)
+        [If.new(condition,Sequence.new(body,self),DoNothing.new), environment]
+    end
+end
+
+Machine.new(
+    While.new(
+        LessThan.new(Variable.new(:x), Number.new(5)),
+        Assign.new(:x, Multiply.new(Variable.new(:x), Number.new(3)))
+    ),
+    { x: Number.new(1) }
 ).run
