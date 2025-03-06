@@ -119,3 +119,22 @@ Machine.new(
     {x: Number.new(3), y: Number.new(4)}
 ).run
 
+class DoNothing
+    def to_s
+        'do-nothing'
+    end
+    def inspect
+        "<<#{self}>>"
+    end
+    def ==(other_statement)
+        other_statement.instance_of?(DoNothing)
+    end
+    def reducible?
+        false
+    end
+end
+
+old_environment = { y: Number.new(5) }
+new_environment = old_environment.merge({ x: Number.new(3) })
+old_environment
+
