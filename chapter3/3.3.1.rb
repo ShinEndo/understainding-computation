@@ -74,3 +74,33 @@ pattern = Repeat.new(
 		Literal.new('a')
 	)
 )
+
+class Empty
+	def to_nfa_design
+		start_state = Object.new
+		accept_states = [start_state]
+		rulebook = NFARulebook.new([])
+		
+		NFADesign.new(start_state, accept_states, rulebook)
+	end
+end
+
+class Literal
+	def to_nfa_design
+		start_state = Object.new
+		accept_state = Object.new
+		rule = FARule.new(start_state, character, accept_state)
+		rulebook = NFARulebook.new([rule])
+		
+		NFADesign.new(start_state, [accept_state], rulebook)
+	end
+end
+
+nfa_design = Empty.new.to_nfa_design
+nfa_design.accepts?('')
+nfa_design.accepts?('a')
+
+nfa_design = Literal.new('a').to_nfa_design
+nfa_design.accepts?('')
+nfa_design.accepts('a')
+nfa_design.accepts('b')
